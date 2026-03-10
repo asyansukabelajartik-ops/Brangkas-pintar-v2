@@ -3,118 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brankas Pro - Tanpa LED</title>
+    <title>Vault Pro - Final Version</title>
     <style>
-        :root { --primary: #2563eb; --danger: #dc2626; --success: #16a34a; --dark: #0f172a; --bg: #f8fafc; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--dark); margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .container { max-width: 400px; width: 100%; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h1 { text-align: center; font-size: 1.4rem; margin-bottom: 20px; }
-        .data-display { display: flex; justify-content: space-between; padding: 12px; background: #f1f5f9; border-radius: 8px; margin: 8px 0; font-weight: bold; }
-        button { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-success { background: var(--success); color: white; }
-        #alertBanner { background: var(--danger); color: white; text-align: center; padding: 15px; border-radius: 8px; display: none; font-weight: bold; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
-        input[type="range"] { width: 100%; margin-top: 10px; }
+        :root { --p: #2563eb; --d: #dc2626; --s: #16a34a; --bg: #f8fafc; }
+        body { font-family: sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        .status-box { background: #f1f5f9; padding: 12px; border-radius: 8px; margin: 10px 0; display: flex; justify-content: space-between; font-weight: bold; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 8px; transition: 0.2s; }
+        .btn-blue { background: var(--p); color: white; }
+        .btn-red { background: var(--d); color: white; }
+        .btn-green { background: var(--s); color: white; }
+        button:disabled { background: #cbd5e1; cursor: not-allowed; }
+        #debugLog { background: #1e293b; color: #38bdf8; font-family: monospace; font-size: 11px; padding: 10px; height: 80px; overflow-y: auto; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🛡️ Kontrol Brankas</h1>
+<div class="card">
+    <h2 style="text-align:center; margin-top:0;">🛡️ Vault Controller</h2>
     
-    <div id="alertBanner">🚨 PERINGATAN: DIBOBOL! 🚨</div>
-
-    <div class="card">
-        <button class="btn-primary" id="btnConnect">🔗 Sambungkan ke Micro:bit</button>
-        <div class="data-display">
-            <span>Cahaya:</span>
-            <span id="valCahaya" style="color: var(--primary);">--</span>
-        </div>
-        <div class="data-display">
-            <span>Status:</span>
-            <span id="txtStatus">Standby 🔒</span>
-        </div>
+    <button class="btn-blue" id="btnConnect">1. HUBUNGKAN BLUETOOTH</button>
+    
+    <div class="status-box">
+        <span>Sensor Cahaya:</span>
+        <span id="valCahaya" style="color:var(--p);">--</span>
+    </div>
+    
+    <div class="status-box">
+        <span>Status Pintu:</span>
+        <span id="txtStatus">Standby 🔒</span>
     </div>
 
-    <div class="card">
-        <label>⚙️ Sensitivitas: <b id="lblAmbang">50</b></label>
-        <input type="range" id="sliderAmbang" min="5" max="300" value="50">
-        <button class="btn-danger" id="btnAlarmOn">Aktifkan Proteksi</button>
-        <button class="btn-success" id="btnAlarmOff" style="display:none">Matikan Alarm</button>
+    <div style="margin: 15px 0;">
+        <label style="font-size: 13px;">⚙️ Ambang Batas: <b id="lblAmbang">50</b></label>
+        <input type="range" id="sliderAmbang" min="5" max="300" value="50" style="width:100%;">
     </div>
 
-    <div class="card" style="font-size: 0.85rem; border-left: 4px solid var(--primary);">
-        <b>Verifikasi Pemulihan:</b><br>
-        Hitung luas daerah antara kurva:<br>
-        $f(x) = 2x^2 - 4x + 1$ dan $g(x) = -x^2 + 2x + 4$
-    </div>
+    <button class="btn-red" id="btnAlarmOn" disabled>AKTIFKAN PROTEKSI</button>
+    <button class="btn-green" id="btnAlarmOff" style="display:none;">MATIKAN ALARM</button>
+
+    <p style="font-size: 11px; color: #64748b; margin-top: 15px;">LOG KOMUNIKASI:</p>
+    <div id="debugLog">Menunggu koneksi...</div>
 </div>
 
 <script>
-    const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-    const TX_CHARACTERISTIC = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
-    const RX_CHARACTERISTIC = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+    const UUID_SERVICE = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+    const UUID_TX = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"; // Kirim data
+    const UUID_RX = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"; // Terima data
 
-    let device, characteristicTX;
+    let charTX;
 
-    async function handleConnect() {
-        try {
-            device = await navigator.bluetooth.requestDevice({
-                filters: [{ namePrefix: 'BBC micro:bit' }],
-                optionalServices: [SERVICE_UUID]
-            });
-            const server = await device.gatt.connect();
-            const service = await server.getPrimaryService(SERVICE_UUID);
-            characteristicTX = await service.getCharacteristic(TX_CHARACTERISTIC);
-            const characteristicRX = await service.getCharacteristic(RX_CHARACTERISTIC);
-
-            await characteristicRX.startNotifications();
-            characteristicRX.addEventListener('characteristicvaluechanged', (event) => {
-                const decoder = new TextDecoder();
-                const message = decoder.decode(event.target.value).trim();
-                processIncomingData(message);
-            });
-
-            document.getElementById('btnConnect').innerText = "✅ Terhubung";
-            document.getElementById('btnConnect').disabled = true;
-        } catch (error) { console.log(error); }
+    function log(msg) {
+        const d = document.getElementById('debugLog');
+        d.innerHTML += `> ${msg}<br>`;
+        d.scrollTop = d.scrollHeight;
     }
 
-    function processIncomingData(msg) {
+    async function connect() {
+        try {
+            log("Mencari Micro:bit...");
+            const device = await navigator.bluetooth.requestDevice({
+                filters: [{ namePrefix: 'BBC micro:bit' }],
+                optionalServices: [UUID_SERVICE]
+            });
+
+            log("Menyambungkan...");
+            const server = await device.gatt.connect();
+            const service = await server.getPrimaryService(UUID_SERVICE);
+            charTX = await service.getCharacteristic(UUID_TX);
+            const charRX = await service.getCharacteristic(UUID_RX);
+
+            log("Mengaktifkan notifikasi...");
+            await charRX.startNotifications();
+            charRX.addEventListener('characteristicvaluechanged', (e) => {
+                const msg = new TextDecoder().decode(e.target.value).trim();
+                handleIncoming(msg);
+            });
+
+            document.getElementById('btnConnect').innerText = "✅ TERHUBUNG";
+            document.getElementById('btnConnect').disabled = true;
+            document.getElementById('btnAlarmOn').disabled = false;
+            log("Sistem Siap!");
+
+        } catch (err) {
+            log("ERROR: " + err);
+        }
+    }
+
+    function handleIncoming(msg) {
         if (msg.startsWith("CAHAYA:")) {
             document.getElementById('valCahaya').innerText = msg.split(":")[1];
         } else if (msg === "STATUS:DIBOBOL") {
-            document.getElementById('alertBanner').style.display = "block";
+            document.getElementById('txtStatus').innerText = "DIBOBOL! 🚨";
+            document.getElementById('txtStatus').style.color = "var(--d)";
             document.getElementById('btnAlarmOff').style.display = "block";
-            document.getElementById('txtStatus').innerText = "BAHAYA! 🔓";
-            document.getElementById('txtStatus').style.color = "var(--danger)";
         } else if (msg === "STATUS:ALARM_MATI") {
-            document.getElementById('alertBanner').style.display = "none";
-            document.getElementById('btnAlarmOff').style.display = "none";
             document.getElementById('txtStatus').innerText = "Aman 🔒";
-            document.getElementById('txtStatus').style.color = "var(--success)";
+            document.getElementById('txtStatus').style.color = "var(--s)";
+            document.getElementById('btnAlarmOff').style.display = "none";
         } else if (msg === "STATUS:DIBUKA_AMAN") {
             document.getElementById('txtStatus').innerText = "Terbuka Aman 🔓";
-            document.getElementById('txtStatus').style.color = "var(--primary)";
+            document.getElementById('txtStatus').style.color = "var(--p)";
         }
     }
 
-    async function sendCommand(cmd) {
-        if (characteristicTX) {
+    async function send(msg) {
+        if (!charTX) return log("Error: Belum konek!");
+        try {
             const encoder = new TextEncoder();
-            await characteristicTX.writeValue(encoder.encode(cmd + "\n"));
+            // Gunakan \n (Newline) karena Microbit menunggu pembatas ini
+            await charTX.writeValueWithResponse(encoder.encode(msg + "\n"));
+            log("Terkirim: " + msg);
+        } catch (err) {
+            log("Gagal kirim: " + err);
         }
     }
 
-    document.getElementById('btnConnect').onclick = handleConnect;
-    document.getElementById('btnAlarmOn').onclick = () => sendCommand("ALARM_ON");
-    document.getElementById('btnAlarmOff').onclick = () => sendCommand("ALARM_OFF");
+    document.getElementById('btnConnect').onclick = connect;
+    document.getElementById('btnAlarmOn').onclick = () => send("ALARM_ON");
+    document.getElementById('btnAlarmOff').onclick = () => send("ALARM_OFF");
     document.getElementById('sliderAmbang').oninput = (e) => {
         document.getElementById('lblAmbang').innerText = e.target.value;
-        sendCommand("SET_LIMIT:" + e.target.value);
+        send("SET_LIMIT:" + e.target.value);
     };
 </script>
 </body>
