@@ -1,177 +1,256 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vault Pro - Final Version</title>
-    <style>
-        :root { --p: #2563eb; --d: #dc2626; --s: #16a34a; --bg: #f8fafc; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        .status-box { background: #f1f5f9; padding: 15px; border-radius: 10px; margin: 10px 0; display: flex; justify-content: space-between; align-items: center; font-weight: bold; border: 1px solid #e2e8f0; }
-        button { width: 100%; padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 10px; transition: all 0.2s; font-size: 14px; }
-        .btn-blue { background: var(--p); color: white; }
-        .btn-blue:hover { background: #1d4ed8; }
-        .btn-red { background: var(--d); color: white; }
-        .btn-green { background: var(--s); color: white; }
-        button:disabled { background: #cbd5e1; cursor: not-allowed; opacity: 0.7; }
-        #debugLog { background: #0f172a; color: #38bdf8; font-family: 'Courier New', monospace; font-size: 11px; padding: 12px; height: 100px; overflow-y: auto; border-radius: 8px; border: 1px solid #334155; }
-        .label-small { font-size: 12px; color: #64748b; margin-bottom: 5px; display: block; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vault Controller Stable</title>
+
+<style>
+:root{
+--p:#2563eb;
+--d:#dc2626;
+--s:#16a34a;
+--bg:#f1f5f9;
+}
+
+body{
+font-family:Segoe UI;
+background:var(--bg);
+display:flex;
+justify-content:center;
+padding:20px;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:15px;
+width:100%;
+max-width:420px;
+box-shadow:0 10px 20px rgba(0,0,0,0.1);
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.blue{background:var(--p);color:white;}
+.red{background:var(--d);color:white;}
+.green{background:var(--s);color:white;}
+
+.status{
+display:flex;
+justify-content:space-between;
+background:#f8fafc;
+padding:12px;
+border-radius:8px;
+margin-top:10px;
+font-weight:bold;
+}
+
+#debug{
+background:#020617;
+color:#38bdf8;
+font-family:monospace;
+font-size:11px;
+height:120px;
+overflow:auto;
+padding:10px;
+border-radius:8px;
+margin-top:15px;
+}
+</style>
 </head>
+
 <body>
 
 <div class="card">
-    <h2 style="text-align:center; margin-top:0; color: #1e293b;">🛡️ Vault Controller</h2>
-    
-    <button class="btn-blue" id="btnConnect">1. HUBUNGKAN BLUETOOTH</button>
-    
-    <div class="status-box">
-        <span>Sensor Cahaya:</span>
-        <span id="valCahaya" style="color:var(--p); font-size: 1.2em;">--</span>
-    </div>
-    
-    <div class="status-box">
-        <span>Status Pintu:</span>
-        <span id="txtStatus">Standby 🔒</span>
-    </div>
 
-    <div style="margin: 20px 0;">
-        <label class="label-small">⚙️ Ambang Batas Cahaya: <b id="lblAmbang">50</b></label>
-        <input type="range" id="sliderAmbang" min="5" max="300" value="50" style="width:100%; cursor: pointer;">
-    </div>
+<h2 style="text-align:center">🛡️ Vault Controller</h2>
 
-    <button class="btn-red" id="btnAlarmOn" disabled>AKTIFKAN PROTEKSI</button>
-    <button class="btn-green" id="btnAlarmOff" style="display:none;">MATIKAN ALARM</button>
+<button class="blue" id="btnConnect">HUBUNGKAN BLUETOOTH</button>
 
-    <p class="label-small" style="margin-top: 20px;">LOG KOMUNIKASI:</p>
-    <div id="debugLog">Menunggu koneksi...</div>
+<div class="status">
+<span>Sensor Cahaya</span>
+<span id="valCahaya">--</span>
+</div>
+
+<div class="status">
+<span>Status</span>
+<span id="txtStatus">Standby</span>
+</div>
+
+<button class="red" id="btnAlarmOn" disabled>AKTIFKAN PROTEKSI</button>
+<button class="green" id="btnAlarmOff" style="display:none;">MATIKAN ALARM</button>
+
+<div id="debug">Menunggu koneksi...</div>
+
 </div>
 
 <script>
-    // UUID Standar untuk Nordic UART Service (digunakan micro:bit)
-    const UUID_SERVICE = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-    const UUID_TX = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"; // Karakteristik untuk Mengirim (Write)
-    const UUID_RX = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"; // Karakteristik untuk Menerima (Notify)
 
-    let charTX;
-    let bluetoothDevice;
+const UART_SERVICE = "6e400001-b5a3-f393-e0a9-e50e24dcca9e"
+const UART_TX = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"
+const UART_RX = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
 
-    function log(msg) {
-        const d = document.getElementById('debugLog');
-        d.innerHTML += `> ${msg}<br>`;
-        d.scrollTop = d.scrollHeight;
-        console.log(msg);
-    }
+let device
+let txChar
+let rxChar
 
-    async function connect() {
-        try {
-            log("Mencari Micro:bit...");
-            bluetoothDevice = await navigator.bluetooth.requestDevice({
-                filters: [{ namePrefix: 'BBC micro:bit' }],
-                optionalServices: [UUID_SERVICE]
-            });
+let buffer = ""
 
-            log("Menyambungkan ke GATT Server...");
-            const server = await bluetoothDevice.gatt.connect();
-            
-            log("Mendapatkan Service UART...");
-            const service = await server.getPrimaryService(UUID_SERVICE);
-            
-            log("Mendapatkan Karakteristik...");
-            charTX = await service.getCharacteristic(UUID_TX);
-            const charRX = await service.getCharacteristic(UUID_RX);
+function log(t){
+const d=document.getElementById("debug")
+d.innerHTML+="<br>> "+t
+d.scrollTop=d.scrollHeight
+console.log(t)
+}
 
-            log("Mengaktifkan Notifikasi...");
-            await charRX.startNotifications();
-            charRX.addEventListener('characteristicvaluechanged', (e) => {
-                const rawData = new TextDecoder().decode(e.target.value);
-                handleIncoming(rawData);
-            });
+async function connect(){
 
-            document.getElementById('btnConnect').innerText = "✅ TERHUBUNG";
-            document.getElementById('btnConnect').style.background = "#0f172a";
-            document.getElementById('btnConnect').disabled = true;
-            document.getElementById('btnAlarmOn').disabled = false;
-            log("Sistem Siap! Silakan aktifkan proteksi.");
+try{
 
-            bluetoothDevice.addEventListener('gattserverdisconnected', () => {
-                log("Koneksi terputus!");
-                resetUI();
-            });
+log("Mencari micro:bit...")
 
-        } catch (err) {
-            log("ERROR: " + err);
-        }
-    }
+device = await navigator.bluetooth.requestDevice({
+filters:[{namePrefix:"BBC micro:bit"}],
+optionalServices:[UART_SERVICE]
+})
 
-    function handleIncoming(rawMsg) {
-        // Trim untuk menghapus spasi atau karakter newline (\r \n)
-        const msg = rawMsg.trim();
-        
-        if (msg.includes("CAHAYA:")) {
-            const val = msg.split(":")[1];
-            document.getElementById('valCahaya').innerText = val;
-        } 
-        else if (msg.includes("DIBOBOL")) {
-            document.getElementById('txtStatus').innerText = "DIBOBOL! 🚨";
-            document.getElementById('txtStatus').style.color = "var(--d)";
-            document.getElementById('btnAlarmOff').style.display = "block";
-            log("PERINGATAN: Pintu dibuka paksa!");
-        } 
-        else if (msg.includes("ALARM_MATI")) {
-            document.getElementById('txtStatus').innerText = "Aman 🔒";
-            document.getElementById('txtStatus').style.color = "var(--s)";
-            document.getElementById('btnAlarmOff').style.display = "none";
-            log("Alarm telah dimatikan.");
-        } 
-        else if (msg.includes("DIBUKA_AMAN")) {
-            document.getElementById('txtStatus').innerText = "Terbuka Aman 🔓";
-            document.getElementById('txtStatus').style.color = "var(--p)";
-            log("Pintu dibuka secara legal.");
-        }
-    }
+log("Menghubungkan GATT...")
 
-    async function send(msg) {
-        if (!charTX) {
-            log("Gagal: Bluetooth belum terhubung!");
-            return;
-        }
+const server = await device.gatt.connect()
 
-        try {
-            const encoder = new TextEncoder();
-            // Micro:bit biasanya menunggu karakter pemutus seperti Newline (\n)
-            const data = encoder.encode(msg + "\n");
-            
-            // Gunakan writeValueWithoutResponse agar lebih cepat dan stabil untuk micro:bit
-            await charTX.writeValueWithoutResponse(data);
-            log("Terkirim: " + msg);
-        } catch (err) {
-            log("Gagal kirim: " + err);
-        }
-    }
+log("Mengambil UART Service")
 
-    function resetUI() {
-        document.getElementById('btnConnect').innerText = "1. HUBUNGKAN BLUETOOTH";
-        document.getElementById('btnConnect').disabled = false;
-        document.getElementById('btnConnect').style.background = "var(--p)";
-        document.getElementById('btnAlarmOn').disabled = true;
-        document.getElementById('btnAlarmOff').style.display = "none";
-        document.getElementById('valCahaya').innerText = "--";
-        document.getElementById('txtStatus').innerText = "Standby 🔒";
-        document.getElementById('txtStatus').style.color = "black";
-    }
+const service = await server.getPrimaryService(UART_SERVICE)
 
-    // Event Listeners
-    document.getElementById('btnConnect').onclick = connect;
-    document.getElementById('btnAlarmOn').onclick = () => send("ALARM_ON");
-    document.getElementById('btnAlarmOff').onclick = () => send("ALARM_OFF");
-    
-    document.getElementById('sliderAmbang').onchange = (e) => {
-        const val = e.target.value;
-        document.getElementById('lblAmbang').innerText = val;
-        send("SET_LIMIT:" + val);
-    };
+txChar = await service.getCharacteristic(UART_TX)
+rxChar = await service.getCharacteristic(UART_RX)
+
+await rxChar.startNotifications()
+
+rxChar.addEventListener("characteristicvaluechanged",handleRX)
+
+device.addEventListener("gattserverdisconnected",disconnected)
+
+document.getElementById("btnConnect").innerText="TERHUBUNG"
+document.getElementById("btnConnect").disabled=true
+document.getElementById("btnAlarmOn").disabled=false
+
+log("Sistem siap")
+
+}catch(e){
+
+log("ERROR "+e)
+
+}
+
+}
+
+function handleRX(event){
+
+let chunk = new TextDecoder().decode(event.target.value)
+
+buffer += chunk
+
+let lines = buffer.split("\n")
+
+buffer = lines.pop()
+
+lines.forEach(line=>{
+line=line.trim()
+if(line!=""){
+handleMessage(line)
+}
+})
+
+}
+
+function handleMessage(msg){
+
+log("RX "+msg)
+
+if(msg.startsWith("CAHAYA:")){
+
+let v=msg.split(":")[1]
+document.getElementById("valCahaya").innerText=v
+
+}
+
+else if(msg.includes("DIBOBOL")){
+
+document.getElementById("txtStatus").innerText="DIBOBOL 🚨"
+document.getElementById("txtStatus").style.color="red"
+document.getElementById("btnAlarmOff").style.display="block"
+
+}
+
+else if(msg.includes("ALARM_MATI")){
+
+document.getElementById("txtStatus").innerText="Aman"
+document.getElementById("txtStatus").style.color="green"
+document.getElementById("btnAlarmOff").style.display="none"
+
+}
+
+else if(msg.includes("DIBUKA_AMAN")){
+
+document.getElementById("txtStatus").innerText="Terbuka Aman"
+document.getElementById("txtStatus").style.color="blue"
+
+}
+
+}
+
+async function send(text){
+
+if(!txChar){
+
+log("Bluetooth belum terhubung")
+
+return
+
+}
+
+try{
+
+let data = new TextEncoder().encode(text+"\n")
+
+await txChar.writeValue(data)
+
+log("TX "+text)
+
+}catch(e){
+
+log("Gagal kirim "+e)
+
+}
+
+}
+
+function disconnected(){
+
+log("Bluetooth terputus")
+
+document.getElementById("btnConnect").disabled=false
+document.getElementById("btnConnect").innerText="HUBUNGKAN BLUETOOTH"
+
+}
+
+document.getElementById("btnConnect").onclick=connect
+
+document.getElementById("btnAlarmOn").onclick=()=>send("ALARM_ON")
+
+document.getElementById("btnAlarmOff").onclick=()=>send("ALARM_OFF")
+
 </script>
+
 </body>
 </html>
