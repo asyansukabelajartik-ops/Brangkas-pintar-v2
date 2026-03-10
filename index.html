@@ -2,325 +2,120 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Brankas Pro - Biometric Ready</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brankas Pro - Tanpa LED</title>
     <style>
-        :root { --primary: #3b82f6; --danger: #ef4444; --warning: #f59e0b; --success: #10b981; --dark: #1e293b; --bg: #f1f5f9; --card-bg: #ffffff; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--dark); margin: 0; padding: 15px; display: flex; justify-content: center; overflow-x: hidden; }
-        .container { max-width: 500px; width: 100%; animation: fadeIn 0.8s ease-out; }
-        h1 { text-align: center; font-size: 1.6em; margin-bottom: 20px; color: var(--dark); }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulseAlert { 0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); transform: scale(1); } 50% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.8); transform: scale(1.02); } }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
-
-        .card { background: var(--card-bg); padding: 15px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 15px; }
-        .card h3 { margin-top: 0; font-size: 1.1em; border-bottom: 2px solid var(--bg); padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        
-        .data-row { display: flex; justify-content: space-between; align-items: center; font-size: 1em; margin: 10px 0; padding: 12px; background: var(--bg); border-radius: 10px; font-weight: bold; }
-        .data-value { color: var(--primary); font-size: 1.1em; }
-
-        input[type="range"] { width: 100%; margin-top: 10px; accent-color: var(--primary); }
-        button { width: 100%; padding: 15px; margin: 8px 0; border: none; border-radius: 12px; font-size: 1.1em; font-weight: bold; cursor: pointer; color: white; transition: all 0.2s; }
-        button:active { transform: scale(0.95); }
-        button:disabled { background: #cbd5e1; cursor: not-allowed; }
-        
-        .btn-connect { background: linear-gradient(135deg, var(--primary), #2563eb); }
-        .btn-lockdown { background: linear-gradient(135deg, var(--danger), #b91c1c); }
-        .btn-off { background: linear-gradient(135deg, var(--success), #059669); display: none; }
-        .btn-biometric { background: #f8fafc; color: var(--dark); border: 2px solid #e2e8f0; font-size: 0.95em; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 15px; }
-
-        .alert-banner { background: linear-gradient(135deg, var(--danger), #b91c1c); color: white; text-align: center; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 1.2em; margin-bottom: 15px; display: none; animation: pulseAlert 1.5s infinite; }
-
-        /* Modal Styles */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 1000; }
-        .modal-box { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; }
-        .modal-overlay.active { display: flex; }
-        .pin-input { width: 80%; padding: 12px; font-size: 1.5em; text-align: center; letter-spacing: 5px; border: 2px solid #cbd5e1; border-radius: 10px; margin: 15px 0; outline: none; }
-        .error-shake { animation: shake 0.4s; border-color: var(--danger) !important; color: var(--danger); }
-
-        .history-list { max-height: 150px; overflow-y: auto; font-size: 0.85em; }
-        .history-item { padding: 8px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; }
-        
-        /* Watermark */
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-        .watermark {
-            position: fixed;       
-            bottom: 10px;          
-            left: 10px;            
-            font-size: 18px;       
-            font-family: 'Orbitron', sans-serif;  
-            color: black;          
-            opacity: 0.3;          
-            pointer-events: none;  
-            z-index: 9999;         
-            letter-spacing: 1px;   
-        }
+        :root { --primary: #2563eb; --danger: #dc2626; --success: #16a34a; --dark: #0f172a; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: var(--dark); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { max-width: 400px; width: 100%; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h1 { text-align: center; font-size: 1.4rem; margin-bottom: 20px; }
+        .data-display { display: flex; justify-content: space-between; padding: 12px; background: #f1f5f9; border-radius: 8px; margin: 8px 0; font-weight: bold; }
+        button { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        #alertBanner { background: var(--danger); color: white; text-align: center; padding: 15px; border-radius: 8px; display: none; font-weight: bold; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        input[type="range"] { width: 100%; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>🛡️ Brankas Pintar</h1>
+<div class="container">
+    <h1>🛡️ Kontrol Brankas</h1>
+    
+    <div id="alertBanner">🚨 PERINGATAN: DIBOBOL! 🚨</div>
 
-        <div id="alertBox" class="alert-banner">🚨 BRANKAS DIBOBOL! 🚨</div>
-
-        <div class="card">
-            <h3>📶 Koneksi</h3>
-            <button class="btn-connect" id="btnConnect">Sambungkan ke Brankas</button>
+    <div class="card">
+        <button class="btn-primary" id="btnConnect">🔗 Sambungkan ke Micro:bit</button>
+        <div class="data-display">
+            <span>Cahaya:</span>
+            <span id="valCahaya" style="color: var(--primary);">--</span>
         </div>
-
-        <div class="card">
-            <h3>📊 Status & Sensor</h3>
-            <div class="data-row">
-                <span>🔒 Brankas:</span>
-                <span id="teksBrankas" style="color: var(--success);">Terkunci 🔒</span>
-            </div>
-            <div class="data-row">
-                <span>💡 Cahaya:</span>
-                <span class="data-value" id="valCahaya">--</span>
-            </div>
-            <div style="margin-top: 10px;">
-                <label style="font-size: 0.85em; font-weight: bold;">🎚️ Ambang Batas: <span id="valAmbang">50</span></label>
-                <input type="range" id="sliderAmbang" min="10" max="200" value="50" disabled>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>🕹️ Kontrol Keamanan</h3>
-            <button style="background: var(--dark);" onclick="openModal('verifyOldPin')">🔑 Ganti PIN Web</button>
-            <button class="btn-lockdown" id="btnLockdown" disabled>🔊 SIRINE MANUAL</button>
-            <button class="btn-off" id="btnMatikanAlarm" onclick="openModal('turnOff')">🔕 MATIKAN ALARM</button>
-        </div>
-
-        <div class="card">
-            <h3>📝 Riwayat</h3>
-            <div class="history-list" id="historyLog"></div>
+        <div class="data-display">
+            <span>Status:</span>
+            <span id="txtStatus">Standby 🔒</span>
         </div>
     </div>
 
-    <div class="modal-overlay" id="pinModalOverlay">
-        <div class="modal-box">
-            <h3 id="modalTitle">Verifikasi</h3>
-            <p id="modalDesc" style="font-size: 0.9em; color: #64748b; margin-bottom: 15px;">Gunakan metode di bawah.</p>
-            
-            <button id="btnBiometric" class="btn-biometric">
-                <span>☝️</span> Sidik Jari / FaceID
-            </button>
-
-            <div id="pinInputArea">
-                <input type="password" id="pinInput" class="pin-input" inputmode="numeric" maxlength="6" placeholder="****">
-            </div>
-
-            <div id="mathInputContainer" style="display: none; justify-content: center; gap: 5px; margin-bottom: 15px;">
-                <input type="text" id="mathInput" class="pin-input" style="margin: 0; width: 65%; font-size: 1.1em; letter-spacing: 1px;" placeholder="Jawaban">
-                <button id="btnAkar" style="width: 20%; margin: 0; background: #cbd5e1; color: black; font-size: 1.2em;">√</button>
-            </div>
-
-            <div style="display: flex; gap: 10px; flex-direction: column;">
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="closeModal()" style="background: #94a3b8; width: 40%; padding: 10px;">Batal</button>
-                    <button id="btnSubmitPin" style="background: var(--primary); width: 60%; padding: 10px;">OK</button>
-                </div>
-                <button id="btnLupaPin" style="background: transparent; color: var(--primary); font-size: 0.85em; box-shadow: none;">Lupa PIN?</button>
-            </div>
-        </div>
+    <div class="card">
+        <label>⚙️ Sensitivitas: <b id="lblAmbang">50</b></label>
+        <input type="range" id="sliderAmbang" min="5" max="300" value="50">
+        <button class="btn-danger" id="btnAlarmOn">Aktifkan Proteksi</button>
+        <button class="btn-success" id="btnAlarmOff" style="display:none">Matikan Alarm</button>
     </div>
 
-    <div class="watermark">ProjectAsyan</div>
+    <div class="card" style="font-size: 0.85rem; border-left: 4px solid var(--primary);">
+        <b>Verifikasi Pemulihan:</b><br>
+        Hitung luas daerah antara kurva:<br>
+        $f(x) = 2x^2 - 4x + 1$ dan $g(x) = -x^2 + 2x + 4$
+    </div>
+</div>
 
-    <script>
-        // --- KONFIGURASI BLE ---
-        const UART_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-        const UART_TX_CHAR_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"; 
-        const UART_RX_CHAR_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"; 
+<script>
+    const SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+    const TX_CHARACTERISTIC = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+    const RX_CHARACTERISTIC = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
-        let bleDevice, rxCharacteristic, txCharacteristic;
-        let systemPin = localStorage.getItem('vaultPin') || "1234";
-        let pinAction = ""; 
-        let isAlarmActive = false; // Mencegah status berubah hijau saat alarm masih teriak
+    let device, characteristicTX;
 
-        // --- UI ELEMENTS ---
-        const btnConnect = document.getElementById('btnConnect');
-        const btnLockdown = document.getElementById('btnLockdown');
-        const btnMatikanAlarm = document.getElementById('btnMatikanAlarm');
-        const alertBox = document.getElementById('alertBox');
-        const modalOverlay = document.getElementById('pinModalOverlay');
-        const pinInput = document.getElementById('pinInput');
-        const btnBiometric = document.getElementById('btnBiometric');
+    async function handleConnect() {
+        try {
+            device = await navigator.bluetooth.requestDevice({
+                filters: [{ namePrefix: 'BBC micro:bit' }],
+                optionalServices: [SERVICE_UUID]
+            });
+            const server = await device.gatt.connect();
+            const service = await server.getPrimaryService(SERVICE_UUID);
+            characteristicTX = await service.getCharacteristic(TX_CHARACTERISTIC);
+            const characteristicRX = await service.getCharacteristic(RX_CHARACTERISTIC);
 
-        // --- RIWAYAT ---
-        function addHistory(msg, type) {
-            let history = JSON.parse(localStorage.getItem('vaultHistory')) || [];
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            history.unshift({ time, msg, type });
-            localStorage.setItem('vaultHistory', JSON.stringify(history.slice(0, 10)));
-            renderHistory();
+            await characteristicRX.startNotifications();
+            characteristicRX.addEventListener('characteristicvaluechanged', (event) => {
+                const decoder = new TextDecoder();
+                const message = decoder.decode(event.target.value).trim();
+                processIncomingData(message);
+            });
+
+            document.getElementById('btnConnect').innerText = "✅ Terhubung";
+            document.getElementById('btnConnect').disabled = true;
+        } catch (error) { console.log(error); }
+    }
+
+    function processIncomingData(msg) {
+        if (msg.startsWith("CAHAYA:")) {
+            document.getElementById('valCahaya').innerText = msg.split(":")[1];
+        } else if (msg === "STATUS:DIBOBOL") {
+            document.getElementById('alertBanner').style.display = "block";
+            document.getElementById('btnAlarmOff').style.display = "block";
+            document.getElementById('txtStatus').innerText = "BAHAYA! 🔓";
+            document.getElementById('txtStatus').style.color = "var(--danger)";
+        } else if (msg === "STATUS:ALARM_MATI") {
+            document.getElementById('alertBanner').style.display = "none";
+            document.getElementById('btnAlarmOff').style.display = "none";
+            document.getElementById('txtStatus').innerText = "Aman 🔒";
+            document.getElementById('txtStatus').style.color = "var(--success)";
+        } else if (msg === "STATUS:DIBUKA_AMAN") {
+            document.getElementById('txtStatus').innerText = "Terbuka Aman 🔓";
+            document.getElementById('txtStatus').style.color = "var(--primary)";
         }
+    }
 
-        function renderHistory() {
-            const log = document.getElementById('historyLog');
-            let data = JSON.parse(localStorage.getItem('vaultHistory')) || [];
-            log.innerHTML = data.map(item => `<div class="history-item"><b>${item.msg}</b><span>${item.time}</span></div>`).join('');
+    async function sendCommand(cmd) {
+        if (characteristicTX) {
+            const encoder = new TextEncoder();
+            await characteristicTX.writeValue(encoder.encode(cmd + "\n"));
         }
-        renderHistory();
+    }
 
-        // --- BLUETOOTH CORE ---
-        async function connectBluetooth() {
-            try {
-                bleDevice = await navigator.bluetooth.requestDevice({ filters: [{ namePrefix: 'BBC micro:bit' }], optionalServices: [UART_SERVICE_UUID] });
-                const server = await bleDevice.gatt.connect();
-                const service = await server.getPrimaryService(UART_SERVICE_UUID);
-                txCharacteristic = await service.getCharacteristic(UART_TX_CHAR_UUID);
-                rxCharacteristic = await service.getCharacteristic(UART_RX_CHAR_UUID);
-                await rxCharacteristic.startNotifications();
-                rxCharacteristic.addEventListener('characteristicvaluechanged', (e) => {
-                    const val = new TextDecoder().decode(e.target.value).trim();
-                    processMessage(val);
-                });
-                btnConnect.innerText = "Terhubung ✅"; btnConnect.disabled = true;
-                btnLockdown.disabled = false; document.getElementById('sliderAmbang').disabled = false;
-                addHistory("Koneksi Berhasil", "info");
-            } catch (err) { alert("Gagal konek: " + err); }
-        }
-
-        function processMessage(msg) {
-            if (msg.startsWith("CAHAYA:")) document.getElementById('valCahaya').innerText = msg.split(":")[1];
-            if (msg === "DIBUKA") triggerAlarm("Pintu Terbuka!");
-            if (msg === "ALARM:GETAR") triggerAlarm("Getaran Terdeteksi!");
-            if (msg === "DITUTUP") {
-                if (!isAlarmActive) {
-                    document.getElementById('teksBrankas').innerText = "Terkunci 🔒";
-                    document.getElementById('teksBrankas').style.color = "var(--success)";
-                } else {
-                    document.getElementById('teksBrankas').innerText = "Tertutup (Masih Bahaya!) 🚨";
-                }
-            }
-        }
-
-        function triggerAlarm(reason) {
-            if (!isAlarmActive) {
-                isAlarmActive = true; 
-                alertBox.style.display = "block"; 
-                alertBox.innerText = `🚨 ${reason.toUpperCase()} 🚨`;
-                btnMatikanAlarm.style.display = "block";
-                document.getElementById('teksBrankas').innerText = "BAHAYA! 🔓";
-                document.getElementById('teksBrankas').style.color = "var(--danger)";
-                addHistory(reason, "alert");
-            }
-        }
-
-        async function sendCommand(cmd) {
-            if (txCharacteristic) await txCharacteristic.writeValue(new TextEncoder().encode(cmd + "\n"));
-        }
-
-        // --- BIOMETRIC & MODAL LOGIC ---
-        async function checkBiometricSupport() {
-            if (window.PublicKeyCredential) {
-                const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-                btnBiometric.style.display = available ? "flex" : "none";
-            } else {
-                btnBiometric.style.display = "none";
-            }
-        }
-
-        function openModal(action) {
-            pinAction = action;
-            pinInput.value = ""; 
-            document.getElementById('mathInput').value = "";
-            document.getElementById('mathInputContainer').style.display = "none";
-            document.getElementById('pinInputArea').style.display = "block";
-            
-            checkBiometricSupport();
-
-            if (action === "turnOff") {
-                document.getElementById('modalTitle').innerText = "Matikan Alarm";
-                document.getElementById('modalDesc').innerText = "Gunakan sidik jari atau PIN.";
-            } else if (action === "verifyOldPin") {
-                document.getElementById('modalTitle').innerText = "Verifikasi PIN";
-            }
-
-            modalOverlay.classList.add('active');
-        }
-
-        function closeModal() { modalOverlay.classList.remove('active'); }
-
-        async function verifyBiometric() {
-            const challenge = new Uint8Array(32);
-            window.crypto.getRandomValues(challenge);
-            
-            try {
-                await navigator.credentials.get({
-                    publicKey: { challenge: challenge, allowCredentials: [], userVerification: "required" }
-                });
-                handleAuthSuccess();
-            } catch (err) {
-                console.log("Biometric diabaikan atau error");
-            }
-        }
-
-        function handleAuthSuccess() {
-            if (pinAction === "turnOff") {
-                isAlarmActive = false; 
-                alertBox.style.display = "none";
-                btnMatikanAlarm.style.display = "none";
-                
-                document.getElementById('teksBrankas').innerText = "Aman 🔒";
-                document.getElementById('teksBrankas').style.color = "var(--success)";
-                
-                sendCommand("ALARM_OFF");
-                addHistory("Alarm Dimatikan", "safe");
-                closeModal();
-            } else if (pinAction === "verifyOldPin") {
-                openModal("enterNewPin");
-                document.getElementById('modalTitle').innerText = "Atur PIN Baru";
-                btnBiometric.style.display = "none";
-            }
-        }
-
-        document.getElementById('btnSubmitPin').onclick = () => {
-            const val = pinInput.value;
-            const mathVal = document.getElementById('mathInput').value.replace(/\s/g, '').toLowerCase();
-
-            if (pinAction === "forgotPin") {
-                if (mathVal === "8√2" || mathVal === "8akar2") {
-                    alert("Akses dipulihkan!"); openModal("enterNewPin");
-                } else { pinInput.classList.add("error-shake"); }
-                return;
-            }
-
-            if (pinAction === "enterNewPin") {
-                systemPin = val; localStorage.setItem('vaultPin', val);
-                alert("PIN Disimpan!"); closeModal();
-                return;
-            }
-
-            if (val === systemPin) {
-                handleAuthSuccess();
-            } else {
-                pinInput.classList.add("error-shake");
-                setTimeout(() => pinInput.classList.remove("error-shake"), 400);
-            }
-        };
-
-        document.getElementById('btnLupaPin').onclick = () => {
-            pinAction = "forgotPin";
-            document.getElementById('pinInputArea').style.display = "none";
-            btnBiometric.style.display = "none";
-            document.getElementById('mathInputContainer').style.display = "flex";
-            document.getElementById('modalTitle').innerText = "Ujian Matematika";
-            document.getElementById('modalDesc').innerHTML = "Luas daerah antara kurva:<br><b>f(x)=2x²-4x+1</b> dan <b>g(x)=-x²+2x+4</b>";
-        };
-
-        // --- EVENTS ---
-        btnConnect.onclick = connectBluetooth;
-        btnBiometric.onclick = verifyBiometric;
-        btnLockdown.onclick = () => { if(confirm("Nyalakan sirine?")) { sendCommand("ALARM_ON"); triggerAlarm("Sirine Manual"); } };
-        document.getElementById('btnAkar').onclick = () => document.getElementById('mathInput').value += "√";
-        document.getElementById('sliderAmbang').onchange = (e) => {
-            document.getElementById('valAmbang').innerText = e.target.value;
-            sendCommand("SET_LIMIT:" + e.target.value);
-        };
-    </script>
+    document.getElementById('btnConnect').onclick = handleConnect;
+    document.getElementById('btnAlarmOn').onclick = () => sendCommand("ALARM_ON");
+    document.getElementById('btnAlarmOff').onclick = () => sendCommand("ALARM_OFF");
+    document.getElementById('sliderAmbang').oninput = (e) => {
+        document.getElementById('lblAmbang').innerText = e.target.value;
+        sendCommand("SET_LIMIT:" + e.target.value);
+    };
+</script>
 </body>
 </html>
